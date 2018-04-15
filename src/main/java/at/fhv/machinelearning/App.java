@@ -37,6 +37,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,11 +64,21 @@ public final class App {
      * @param args the command line arguments.
      */
     public static void main(String[] args) {
-        testWithSeedsCSV(); // with CrossValidation (10 folds)
-        testWithLetterOrigCSV(); // with 66% split
+        ExecutorService executor = Executors.newCachedThreadPool();
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        try {
+            executor.execute(testWithLetterOrigCSV(countDownLatch)); // with 66% split
+            testWithSeedsCSV(); // synchronously, with CrossValidation (10 folds)
+            countDownLatch.await();
+        } catch (InterruptedException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        } finally {
+            executor.shutdown();
+        }
     }
 
-    public static final void testWithLetterOrigCSV() {
+    @SuppressWarnings("SleepWhileInLoop")
+    private static Runnable testWithLetterOrigCSV(CountDownLatch countDownLatch) {
         try {
             final String res = "/assets/lettersOrig1000.csv";
             String csv = AppUtils.getResource(App.class, res);
@@ -82,23 +95,37 @@ public final class App {
             NN network = NN.create("MNIST", numInput, numHidden, numOutput);
             network.setLearningRate(0.01);
 
-            final NetworkRunner runner = new NetworkRunner(network);
-            runner.trainNetwork(fold.getTrainSet(), 500); // coffee break
+            final NetworkRunnerAsync asyncRunner = NetworkRunners
+                    .createForAsynchronousExecution(network, fold.getTrainSet(), 500);
 
-            List<Integer> predicted = runner.predict(fold.getTestSet());
-            List<Integer> expected = fold.getValidationSet();
+            // train network asynchronously
+            asyncRunner.setOnCompleted((String s) -> {
+                List<Integer> predicted = asyncRunner.predict(fold.getTestSet());
+                List<Integer> expected = fold.getValidationSet();
 
-            double result = NetworkRunner.calculateMetrics(predicted, expected);
-            LOG.log(Level.INFO, "Success rate: {0}", result);
+                double result = asyncRunner.calculateMetrics(predicted, expected);
+                LOG.log(Level.INFO, "Success rate: {0}", result);
 
-            // serialize created network
-            serialize(network, "nn_letters.ser");
+                try { // serialize created network
+                    serialize(network, "nn_letters.ser");
+                } catch (IOException ex) {
+                    LOG.log(Level.SEVERE, null, ex);
+                }
+                countDownLatch.countDown();
+            });
+
+            return asyncRunner;
+
         } catch (IOException | URISyntaxException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
+
+        return () -> {
+            // no-op
+        };
     }
 
-    public static final void testWithSeedsCSV() {
+    private static void testWithSeedsCSV() {
         try {
             final String res = "/assets/seeds_dataset.csv";
             String csv = AppUtils.getResource(App.class, res);
@@ -117,11 +144,11 @@ public final class App {
             folds.stream().map((fold) -> {
                 int numInput = fold.getTestSet().get(0).getDimension();
                 NN network = NN.create("SEEDS", numInput, numHidden, numOutput);
-                NetworkRunner runner = NetworkRunner.createForSynchronousExecution(network);
+                NetworkRunner runner = new NetworkRunner(network);
                 runner.trainNetwork(fold.getTrainSet(), 100); // epochs
                 List<Integer> predicted = runner.predict(fold.getTestSet());
                 List<Integer> expected = fold.getValidationSet();
-                return NetworkRunner.calculateMetrics(predicted, expected);
+                return runner.calculateMetrics(predicted, expected);
             }).forEachOrdered((result) -> {
                 sb.append(result).append(", ");
             });

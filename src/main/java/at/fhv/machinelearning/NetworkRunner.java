@@ -34,65 +34,22 @@ import org.apache.commons.math3.linear.RealVector;
  *
  * @author Matthias Fussenegger
  */
-public class NetworkRunner implements Runnable {
+public class NetworkRunner {
 
-    private final NN _network;
-    private final DataSet _dataSet;
-    private final int _numEpochs;
+    protected final NN _network;
+
+    public NN getNetwork() {
+        return _network;
+    }
 
     /**
      * Constructs a new instance of {@link NetworkRunner} which can be used for
-     * synchronous execution. Running the returned instance in a thread is a
-     * no-op.
+     * synchronous execution.
      *
      * @param network the network to be aggregated.
      */
     public NetworkRunner(NN network) {
         _network = network;
-        _dataSet = DataSet.emptyDataSet();
-        _numEpochs = 0;
-    }
-
-    /**
-     * Constructs a new instance of {@link NetworkRunner} which can be executed
-     * in a thread to perform training of network asynchronously. The specified
-     * {@code dataSet} and {@code numEpochs} are only being used when run in a
-     * thread.
-     *
-     * @param network the network to be aggregated.
-     * @param dataSet the data set to be used for training.
-     * @param numEpochs the number of epochs to be performed during training.
-     */
-    public NetworkRunner(NN network, DataSet dataSet, int numEpochs) {
-        _network = network;
-        _dataSet = dataSet;
-        _numEpochs = numEpochs;
-    }
-
-    /**
-     * Creates a new {@link NetworkRunner} which can be used for synchronous
-     * execution. Running the returned instance in a thread is a no-op.
-     *
-     * @param network the network to be aggregated.
-     * @return a new instance of {@link NetworkRunner}.
-     */
-    public static NetworkRunner createForSynchronousExecution(NN network) {
-        return new NetworkRunner(network);
-    }
-
-    /**
-     * Creates a new {@link NetworkRunner} which can be executed in a thread to
-     * perform training of network asynchronously.The specified {@code dataSet}
-     * and {@code numEpochs} are only being used when run in a thread.
-     *
-     * @param network the network to be aggregated.
-     * @param dataSet the data set to be used for training.
-     * @param numEpochs the number of epochs to be performed during training.
-     * @return a new instance of {@link NetworkRunner}.
-     */
-    public static NetworkRunner createForAsynchronousExecution(
-            NN network, DataSet dataSet, int numEpochs) {
-        return new NetworkRunner(network, dataSet, numEpochs);
     }
 
     /**
@@ -131,7 +88,7 @@ public class NetworkRunner implements Runnable {
      * @param expected the actual classes to be compared.
      * @return the success rate in percentage.
      */
-    public static final double calculateMetrics(
+    public double calculateMetrics(
             List<Integer> predicted, List<Integer> expected) {
         int numCorrect = 0;
         for (int i = 0; i < expected.size(); ++i) {
@@ -140,23 +97,6 @@ public class NetworkRunner implements Runnable {
             }
         }
         return numCorrect / (double) expected.size() * 100;
-    }
-
-    public NN getNetwork() {
-        return _network;
-    }
-
-    public DataSet getDataSet() {
-        return _dataSet;
-    }
-
-    public int getNumEpochs() {
-        return _numEpochs;
-    }
-
-    @Override
-    public void run() {
-        trainNetwork(_dataSet, _numEpochs);
     }
 
 }
