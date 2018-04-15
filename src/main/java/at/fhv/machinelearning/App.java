@@ -73,7 +73,7 @@ public final class App {
 
             Collections.shuffle(dataSet.getData());
 
-            final Fold fold = Fold.fromDataSet(dataSet, 66, NormalizationMethod.MIN_MAX);
+            final Fold fold = Fold.forPercentageSplit(dataSet, 66, NormalizationMethod.MIN_MAX);
 
             final int numInput = fold.getTestSet().get(0).getDimension();
             final int numOutput = DataSetUtils.determineNumberOfOutputNeurons(dataSet);
@@ -107,7 +107,7 @@ public final class App {
             Collections.shuffle(dataSet.getData());
 
             List<DataSet> splits = DataSetUtils.crossSplit(dataSet, 10); // 10 folds
-            final List<Fold> folds = Fold.fromSplits(splits, NormalizationMethod.MIN_MAX);
+            final List<Fold> folds = Fold.forCrossValidation(splits, NormalizationMethod.MIN_MAX);
 
             final int numOutput = DataSetUtils.determineNumberOfOutputNeurons(dataSet);
             final int numHidden = 10;

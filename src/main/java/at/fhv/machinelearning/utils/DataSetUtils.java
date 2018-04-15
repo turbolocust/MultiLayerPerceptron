@@ -64,6 +64,13 @@ public final class DataSetUtils {
         return dataSplit;
     }
 
+    /**
+     * Randomly splits the specified dataset into the specified number of folds.
+     *
+     * @param dataSet the dataset to be split.
+     * @param numFolds the number of folds to be created.
+     * @return list consisting of split dataset (size equals number of folds).
+     */
     public static List<DataSet> crossSplit(DataSet dataSet, int numFolds) {
 
         final List<InputVector> data = dataSet.getData();
@@ -72,10 +79,10 @@ public final class DataSetUtils {
         final Random rand = new Random();
 
         for (int i = 0; i < numFolds; ++i) {
-            List<InputVector> fold = new ArrayList<>();
-            while (fold.size() < (data.size() / numFolds)) {
-                int size = dataCopy.size();
-                int index = rand.nextInt(size);
+            int foldSize = (data.size() / numFolds);
+            List<InputVector> fold = new ArrayList<>(foldSize);
+            while (fold.size() < foldSize) {
+                int index = rand.nextInt(dataCopy.size());
                 fold.add(dataCopy.remove(index));
             }
             dataSplit.add(new DataSet(fold));
@@ -83,6 +90,14 @@ public final class DataSetUtils {
         return dataSplit;
     }
 
+    /**
+     * Determines the number of output neurons by counting the number of unique
+     * labels in the specified dataset.
+     *
+     * @param dataSet the dataset of which to determine the number of output
+     * neurons.
+     * @return the number of output neurons required for this dataset.
+     */
     public static int determineNumberOfOutputNeurons(DataSet dataSet) {
         final Set<String> labels = new HashSet<>();
         dataSet.forEach(data -> labels.add(data.getExpectedValue()));

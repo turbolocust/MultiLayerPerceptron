@@ -66,7 +66,7 @@ public final class Fold {
      * @param method the normalization method to be used.
      * @return a new instance of {@link Fold}.
      */
-    public static final Fold fromDataSet(DataSet dataSet,
+    public static final Fold forPercentageSplit(DataSet dataSet,
             int percentage, NormalizationMethod method) {
         final List<DataSet> split = DataSetUtils.dataSetSplit(dataSet, percentage);
 
@@ -88,13 +88,14 @@ public final class Fold {
     }
 
     /**
-     * Creates and returns a new {@link Fold} from the specified parameters.
+     * Creates and returns a list consisting of {@link Fold} from the specified
+     * parameters to be used for cross validation.
      *
      * @param splits a split data set (e.g. from a cross split).
      * @param method the normalization method to be used.
      * @return a new instance of {@link Fold}.
      */
-    public static final List<Fold> fromSplits(
+    public static final List<Fold> forCrossValidation(
             List<DataSet> splits, NormalizationMethod method) {
 
         List<Fold> folds = new LinkedList<>();
