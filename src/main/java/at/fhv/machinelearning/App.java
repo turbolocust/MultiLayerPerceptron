@@ -126,8 +126,8 @@ public final class App {
                 sb.append(result).append(", ");
             });
 
-            sb.deleteCharAt(sb.length() - 2); // remove last comma
-            sb.insert(0, "[ ").append("]");
+            // remove last comma and insert brackets at beginning and end
+            sb.deleteCharAt(sb.length() - 2).insert(0, "[ ").append("]");
             LOG.log(Level.INFO, "Success rates: {0}", sb);
         } catch (IOException | URISyntaxException ex) {
             LOG.log(Level.SEVERE, null, ex);

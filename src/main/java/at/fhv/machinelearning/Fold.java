@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.math3.linear.RealVector;
 
 /**
+ * Consists of a training set, a test set and a validation set which holds the
+ * expected values for the test set.
  *
  * @author Matthias Fussenegger
  */
@@ -46,14 +48,30 @@ public final class Fold {
         _validationSet = validationSet;
     }
 
+    /**
+     * Returns the aggregated training set.
+     *
+     * @return the aggregated training set.
+     */
     public final DataSet getTrainSet() {
         return _trainSet;
     }
 
+    /**
+     * Returns the aggregated test set.
+     *
+     * @return the aggregated test set.
+     */
     public final List<RealVector> getTestSet() {
         return _testSet;
     }
 
+    /**
+     * Returns the aggregated validation set which holds the expected values for
+     * the test set.
+     *
+     * @return the aggregated validation set.
+     */
     public final List<Integer> getValidationSet() {
         return _validationSet;
     }
@@ -65,6 +83,7 @@ public final class Fold {
      * @param percentage the position the data set is to be split at.
      * @param method the normalization method to be used.
      * @return a new instance of {@link Fold}.
+     * @throws IllegalArgumentException thrown if split data set is too small.
      */
     public static final Fold forPercentageSplit(DataSet dataSet,
             int percentage, NormalizationMethod method) {
