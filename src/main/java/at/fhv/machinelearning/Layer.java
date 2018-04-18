@@ -54,8 +54,7 @@ public final class Layer implements Serializable, Iterable<Neuron> {
     public Layer(int initialSize) {
         _neurons = new ArrayList<>(initialSize);
         _output = new ArrayRealVector(initialSize);
-        _bias = new ArrayRealVector(initialSize); // initialize with zeros
-//        _bias = new ArrayRealVector(new Random().doubles().toArray());
+        _bias = new ArrayRealVector(initialSize);
         _delta = new ArrayRealVector(initialSize);
     }
 

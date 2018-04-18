@@ -60,15 +60,15 @@ public final class App {
 
     /**
      * Main entry point of application.
-     *
+     * 
      * @param args the command line arguments.
      */
     public static void main(String[] args) {
         ExecutorService executor = Executors.newCachedThreadPool();
         CountDownLatch countDownLatch = new CountDownLatch(1);
         try {
-            executor.execute(testWithLetterOrigCSV(countDownLatch)); // with 66% split
-            testWithSeedsCSV(); // synchronously, with CrossValidation (10 folds)
+            executor.execute(testWithLetterOrigCSV(countDownLatch)); // with 66% split and 2 hidden layers
+            testWithSeedsCSV(); // synchronously, with CrossValidation (10 folds) and 2 hideen layers
             countDownLatch.await();
         } catch (InterruptedException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -83,22 +83,24 @@ public final class App {
             final String res = "/assets/lettersOrig1000.csv";
             String csv = AppUtils.getResource(App.class, res);
             DataSet dataSet = readCSV(csv, ",", true, ClassLabelPos.LAST);
-
             Collections.shuffle(dataSet.getData());
 
             final Fold fold = Fold.forPercentageSplit(dataSet, 66, NormalizationMethod.MIN_MAX);
 
             final int numInput = fold.getTestSet().get(0).getDimension();
             final int numOutput = DataSetUtils.determineNumberOfOutputNeurons(dataSet);
+            final int epoches = 100;
+            final float learningRate = 0.3f;
 
             ArrayList<Integer> numsHiddenLayer = new ArrayList<>();
             numsHiddenLayer.add(100); // first hiddenlayer with 100 neurons
             numsHiddenLayer.add(40); // second hiddenlayer with 40 neurons
+
             NN network = NN.create("MNIST", numInput, numsHiddenLayer, numOutput);
-            network.setLearningRate(0.3);
+            network.setLearningRate(learningRate);
 
             final NetworkRunnerAsync asyncRunner = NetworkRunners
-                    .createForAsynchronousExecution(network, fold.getTrainSet(), 100);
+                    .createForAsynchronousExecution(network, fold.getTrainSet(), epoches);
 
             // train network asynchronously
             asyncRunner.setOnCompleted((String s) -> {
@@ -132,23 +134,25 @@ public final class App {
             final String res = "/assets/seeds_dataset.csv";
             String csv = AppUtils.getResource(App.class, res);
             DataSet dataSet = readCSV(csv, ",", false, ClassLabelPos.LAST);
-
             Collections.shuffle(dataSet.getData());
 
-            List<DataSet> splits = DataSetUtils.crossSplit(dataSet, 10); // 10 folds
+            final int numOutput = DataSetUtils.determineNumberOfOutputNeurons(dataSet);
+            final int epoches = 100;
+            final int numfolds = 10;
+            final float learningRate = 0.3f;
+            List<DataSet> splits = DataSetUtils.crossSplit(dataSet, numfolds);
             final List<Fold> folds = Fold.forCrossValidation(splits, NormalizationMethod.MIN_MAX);
 
-            final int numOutput = DataSetUtils.determineNumberOfOutputNeurons(dataSet);
-
             final StringBuilder sb = new StringBuilder();
-
             folds.stream().map((fold) -> {
-                int numInput = fold.getTestSet().get(0).getDimension();   
+                int numInput = fold.getTestSet().get(0).getDimension();
                 ArrayList<Integer> numsHiddenLayer = new ArrayList<>();
-                numsHiddenLayer.add(40); // one hiddenlayer with 40 neurons
+                numsHiddenLayer.add(100); // first hiddenlayer with 100 neurons
+                numsHiddenLayer.add(40); // second hiddenlayer with 40 neurons
                 NN network = NN.create("SEEDS", numInput, numsHiddenLayer, numOutput);
+                network.setLearningRate(learningRate);
                 NetworkRunner runner = new NetworkRunner(network);
-                runner.trainNetwork(fold.getTrainSet(), 100); // epochs
+                runner.trainNetwork(fold.getTrainSet(), epoches); // epochs
                 List<Integer> predicted = runner.predict(fold.getTestSet());
                 List<Integer> expected = fold.getValidationSet();
                 return runner.calculateMetrics(predicted, expected);
