@@ -139,7 +139,6 @@ public final class App {
             final List<Fold> folds = Fold.forCrossValidation(splits, NormalizationMethod.MIN_MAX);
 
             final int numOutput = DataSetUtils.determineNumberOfOutputNeurons(dataSet);
-            final int numHidden = 10;
 
             final StringBuilder sb = new StringBuilder();
 
