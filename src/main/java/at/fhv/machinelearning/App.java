@@ -90,13 +90,15 @@ public final class App {
 
             final int numInput = fold.getTestSet().get(0).getDimension();
             final int numOutput = DataSetUtils.determineNumberOfOutputNeurons(dataSet);
-            final int numHidden = 40;
 
-            NN network = NN.create("MNIST", numInput, numHidden, numOutput);
-            network.setLearningRate(0.01);
+            ArrayList<Integer> numsHiddenLayer = new ArrayList<>();
+            numsHiddenLayer.add(100); // first hiddenlayer with 100 neurons
+            numsHiddenLayer.add(40); // second hiddenlayer with 40 neurons
+            NN network = NN.create("MNIST", numInput, numsHiddenLayer, numOutput);
+            network.setLearningRate(0.3);
 
             final NetworkRunnerAsync asyncRunner = NetworkRunners
-                    .createForAsynchronousExecution(network, fold.getTrainSet(), 500);
+                    .createForAsynchronousExecution(network, fold.getTrainSet(), 100);
 
             // train network asynchronously
             asyncRunner.setOnCompleted((String s) -> {
@@ -142,8 +144,10 @@ public final class App {
             final StringBuilder sb = new StringBuilder();
 
             folds.stream().map((fold) -> {
-                int numInput = fold.getTestSet().get(0).getDimension();
-                NN network = NN.create("SEEDS", numInput, numHidden, numOutput);
+                int numInput = fold.getTestSet().get(0).getDimension();   
+                ArrayList<Integer> numsHiddenLayer = new ArrayList<>();
+                numsHiddenLayer.add(40); // one hiddenlayer with 40 neurons
+                NN network = NN.create("SEEDS", numInput, numsHiddenLayer, numOutput);
                 NetworkRunner runner = new NetworkRunner(network);
                 runner.trainNetwork(fold.getTrainSet(), 100); // epochs
                 List<Integer> predicted = runner.predict(fold.getTestSet());
