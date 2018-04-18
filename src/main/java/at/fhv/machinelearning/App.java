@@ -93,7 +93,7 @@ public final class App {
             final int numHidden = 40;
 
             NN network = NN.create("MNIST", numInput, numHidden, numOutput);
-            network.setLearningRate(0.01);
+            network.setLearningRate(0.3);
 
             final NetworkRunnerAsync asyncRunner = NetworkRunners
                     .createForAsynchronousExecution(network, fold.getTrainSet(), 500);
