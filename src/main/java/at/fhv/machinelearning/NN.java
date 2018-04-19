@@ -53,8 +53,8 @@ public class NN implements Serializable {
      *
      * @param id the network identifier.
      * @param numInputs number of input neurons.
-     * @param numsHiddenLayers numbers of neurons for each hidden layer. each
-     *                         listelement stands for a hidden layer
+     * @param numsHiddenLayers numbers of neurons for each hidden layer. Each
+     *                         list element stands for a hidden layer.
      * @param numOutputs number of output neurons.
      * @return a new instance of {@link NN}.
      */
@@ -68,8 +68,8 @@ public class NN implements Serializable {
      * Initializes the neural network.
      *
      * @param numInputs number of input neurons.
-     * @param numsHiddenLayers numbers of neurons for each hidden layer. each
-     *                         listelement stands for a hidden layer
+     * @param numsHiddenLayers numbers of neurons for each hidden layer. Each
+     *                         list element stands for a hidden layer.
      * @param numOutputs number of output neurons.
      */
     public void init(int numInputs, List<Integer> numsHiddenLayers, int numOutputs) {
@@ -142,7 +142,7 @@ public class NN implements Serializable {
 
     /**
      * Backpropagate error and store in neurons.
-     * 
+     *
      * @param expected vector consisting of expected values.
      */
     private void backpropagateError(RealVector expected) {

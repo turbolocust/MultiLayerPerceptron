@@ -60,7 +60,7 @@ public final class App {
 
     /**
      * Main entry point of application.
-     * 
+     *
      * @param args the command line arguments.
      */
     public static void main(String[] args) {
@@ -81,8 +81,10 @@ public final class App {
     private static Runnable testWithLetterOrigCSV(CountDownLatch countDownLatch) {
         try {
             final String res = "/assets/lettersOrig1000.csv";
+//            final String res = "/assets/mnist_full.csv";
             String csv = AppUtils.getResource(App.class, res);
             DataSet dataSet = readCSV(csv, ",", true, ClassLabelPos.LAST);
+//            DataSet dataSet = readCSV(csv, ",", true, ClassLabelPos.FIRST);
             Collections.shuffle(dataSet.getData());
 
             final Fold fold = Fold.forPercentageSplit(dataSet, 66, NormalizationMethod.MIN_MAX);
@@ -92,9 +94,9 @@ public final class App {
             final int epoches = 100;
             final float learningRate = 0.3f;
 
-            ArrayList<Integer> numsHiddenLayer = new ArrayList<>();
-            numsHiddenLayer.add(100); // first hiddenlayer with 100 neurons
-            numsHiddenLayer.add(40); // second hiddenlayer with 40 neurons
+            List<Integer> numsHiddenLayer = new ArrayList<>();
+            numsHiddenLayer.add(100); // first hidden layer with 100 neurons
+            numsHiddenLayer.add(40); // second hidden layer with 40 neurons
 
             NN network = NN.create("MNIST", numInput, numsHiddenLayer, numOutput);
             network.setLearningRate(learningRate);
@@ -147,8 +149,8 @@ public final class App {
             folds.stream().map((fold) -> {
                 int numInput = fold.getTestSet().get(0).getDimension();
                 ArrayList<Integer> numsHiddenLayer = new ArrayList<>();
-                numsHiddenLayer.add(100); // first hiddenlayer with 100 neurons
-                numsHiddenLayer.add(40); // second hiddenlayer with 40 neurons
+                numsHiddenLayer.add(100); // first hidden layer with 100 neurons
+                numsHiddenLayer.add(40); // second hidden layer with 40 neurons
                 NN network = NN.create("SEEDS", numInput, numsHiddenLayer, numOutput);
                 network.setLearningRate(learningRate);
                 NetworkRunner runner = new NetworkRunner(network);
