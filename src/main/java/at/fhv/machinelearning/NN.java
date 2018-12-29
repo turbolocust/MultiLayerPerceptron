@@ -54,11 +54,12 @@ public class NN implements Serializable {
      * @param id the network identifier.
      * @param numInputs number of input neurons.
      * @param numsHiddenLayers numbers of neurons for each hidden layer. Each
-     *                         list element stands for a hidden layer.
+     * list element stands for a hidden layer.
      * @param numOutputs number of output neurons.
      * @return a new instance of {@link NN}.
      */
-    public static NN create(String id, int numInputs, List<Integer> numsHiddenLayers, int numOutputs) {
+    public static NN create(String id, int numInputs,
+            List<Integer> numsHiddenLayers, int numOutputs) {
         NN nn = new NN(id);
         nn.init(numInputs, numsHiddenLayers, numOutputs);
         return nn;
@@ -69,7 +70,7 @@ public class NN implements Serializable {
      *
      * @param numInputs number of input neurons.
      * @param numsHiddenLayers numbers of neurons for each hidden layer. Each
-     *                         list element stands for a hidden layer.
+     * list element stands for a hidden layer.
      * @param numOutputs number of output neurons.
      */
     public void init(int numInputs, List<Integer> numsHiddenLayers, int numOutputs) {
@@ -129,13 +130,15 @@ public class NN implements Serializable {
             }
             int index = 0;
             for (Neuron neuron : _network.get(i)) {
-                RealVector temp = inputs.mapMultiply(-_learningRate * _network.get(i).getDelta().getEntry(index));
+                RealVector temp = inputs.mapMultiply(-_learningRate
+                        * _network.get(i).getDelta().getEntry(index));
                 // update weights of neuron in layer...
                 neuron.setWeights(neuron.getWeights().add(temp));
                 // ...then update weight of bias neuron
                 double bias = _network.get(i).getBias().getEntry(index);
-                _network.get(i).getBias().setEntry(index,
-                        bias += (-_learningRate * _network.get(i).getDelta().getEntry(index++)));
+                _network.get(i).getBias()
+                        .setEntry(index, bias += (-_learningRate
+                                * _network.get(i).getDelta().getEntry(index++)));
             }
         }
     }
@@ -156,12 +159,12 @@ public class NN implements Serializable {
                     double error = 0d;
                     int counter = 0;
                     for (Neuron neuron : prevLayer) {
-                        // avoid overfitting by multiplying weight with delta
-                        error += (neuron.getWeights().getEntry(j) * prevLayer.getDelta().getEntry(counter++));
+                        error += (neuron.getWeights().getEntry(j)
+                                * prevLayer.getDelta().getEntry(counter++));
                     }
                     errors.add(error);
                 }
-            } else { // starts with outputlayer
+            } else { // starts with output layer
                 for (int j = 0; j < currentLayer.getNeurons().size(); ++j) {
                     errors.add(currentLayer.getOutput().getEntry(j) - expected.getEntry(j));
                 }
@@ -270,7 +273,8 @@ public class NN implements Serializable {
         final StringBuilder sb = new StringBuilder();
         int counter = 0;
         for (Layer layer : _network) {
-            sb.append("Layer").append(++counter).append(": ").append(layer.toString()).append("\n");
+            sb.append("Layer").append(++counter)
+                    .append(": ").append(layer.toString()).append("\n");
         }
         return sb.toString();
     }

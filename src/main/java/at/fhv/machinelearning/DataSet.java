@@ -48,8 +48,8 @@ public final class DataSet implements Iterable<InputVector> {
     public DataSet(DataSet... sets) {
         Objects.requireNonNull(sets);
         _data = new ArrayList<>(256);
-        Arrays.stream(sets).map(set
-                -> set._data).forEachOrdered(_data::addAll);
+        Arrays.stream(sets).map(set -> set._data)
+                .forEachOrdered(_data::addAll);
     }
 
     public final List<InputVector> getData() {

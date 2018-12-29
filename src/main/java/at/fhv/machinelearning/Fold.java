@@ -42,7 +42,8 @@ public final class Fold {
     private final List<RealVector> _testSet;
     private final List<Integer> _validationSet;
 
-    public Fold(DataSet trainSet, List<RealVector> testSet, List<Integer> validationSet) {
+    public Fold(DataSet trainSet, List<RealVector> testSet,
+            List<Integer> validationSet) {
         _trainSet = trainSet;
         _testSet = testSet;
         _validationSet = validationSet;
@@ -87,7 +88,7 @@ public final class Fold {
      */
     public static final Fold forPercentageSplit(DataSet dataSet,
             int percentage, NormalizationMethod method) {
-        
+
         final List<DataSet> split = DataSetUtils.dataSetSplit(dataSet, percentage);
 
         if (split.size() < 2) {
