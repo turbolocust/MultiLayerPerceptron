@@ -76,7 +76,7 @@ public class NN implements Serializable {
     public void init(int numInputs, List<Integer> numsHiddenLayers, int numOutputs) {
         _network = new ArrayList<>();
         int temp = numInputs;
-        for (Integer i : numsHiddenLayers) {
+        for (int i : numsHiddenLayers) {
             _network.add(initLayer(temp, i));
             temp = i;
         }
@@ -97,30 +97,32 @@ public class NN implements Serializable {
     }
 
     /**
-     * Transfers neuron activation.
+     * Calculates the neuron output (using sigmoid function).
      *
-     * @param activation the activation value.
-     * @return the transferred value.
+     * @param activation the exponent in the sigmoid function.
+     * @return the result of the activation function (sigmoid).
      */
-    private double transfer(double activation) {
+    private double calc_sigmoid(double activation) {
         return 1d / (1d + Math.exp(-activation));
     }
 
     /**
-     * Calculates the derivative of an neuron output.
+     * Calculates the derivative of an neuron output, which is the result of the
+     * sigmoid function as calculated in {@link #calc_sigmoid}.
      *
      * @param output an output of a neuron.
-     * @return the derivative of an neuron output.
+     * @return the derivative of the neuron output (derivative of sigmoid).
      */
-    private double transfer_sigmoid(double output) {
+    private double calc_sigmoid_derivative(double output) {
         return output * (1d - output);
     }
 
     /**
-     * Updates the weights based on the specified values of data (row) using the
-     * learning rate as specified in {@link #_learningRate}.
+     * Updates the weights using the specified (input) values. The learning rate
+     * as defined in {@link #_learningRate} is considered.
      *
-     * @param values current vector (row) consisting of data.
+     * @param values input vector consisting of data the network was trained
+     * with in the current forward/backpropagation step.
      */
     private void updateWeights(RealVector values) {
         for (int i = 0; i < _network.size(); ++i) {
@@ -144,7 +146,7 @@ public class NN implements Serializable {
     }
 
     /**
-     * Backpropagate error and store in neurons.
+     * Backpropagate error and store in neurons as delta value.
      *
      * @param expected vector consisting of expected values.
      */
@@ -171,17 +173,17 @@ public class NN implements Serializable {
             }
             // set delta values of neurons, multiply error with derivative
             for (int j = 0; j < currentLayer.getNeurons().size(); ++j) {
-                currentLayer.getDelta().setEntry(j,
-                        errors.get(j) * transfer_sigmoid(currentLayer.getOutput().getEntry(j)));
+                double sd = calc_sigmoid_derivative(currentLayer.getOutput().getEntry(j));
+                currentLayer.getDelta().setEntry(j, errors.get(j) * sd);
             }
         }
     }
 
     /**
-     * Forward propagation for the specified vector with this network.
+     * Forward propagates the specified vector in through this network.
      *
      * @param values vector of data to be processed.
-     * @return the values from the output layer.
+     * @return the values (results) of the output layer.
      */
     private RealVector forwardPropagate(RealVector values) {
         RealVector inputs = values;
@@ -190,7 +192,7 @@ public class NN implements Serializable {
             for (Neuron neuron : layer) {
                 double bias = layer.getBias().getEntry(index);
                 double activation = bias + inputs.dotProduct(neuron.getWeights());
-                layer.getOutput().setEntry(index++, transfer(activation));
+                layer.getOutput().setEntry(index++, calc_sigmoid(activation));
             }
             inputs = layer.getOutput();
         }
