@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
@@ -85,7 +86,7 @@ public class NN implements Serializable {
 
     private Layer initLayer(int numWeights, int numNeurons) {
         Layer layer = new Layer(numNeurons);
-        final Random rand = new Random();
+        final Random rand = ThreadLocalRandom.current();
         for (int i = 0; i < numNeurons; ++i) {
             double[] values = new double[numWeights];
             for (int j = 0; j < values.length; ++j) {

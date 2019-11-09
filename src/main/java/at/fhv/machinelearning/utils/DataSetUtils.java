@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  *
@@ -76,7 +77,7 @@ public final class DataSetUtils {
         final List<InputVector> data = dataSet.getData();
         final List<DataSet> dataSplit = new ArrayList<>(numFolds);
         final List<InputVector> dataCopy = new LinkedList<>(data);
-        final Random rand = new Random();
+        final Random rand = ThreadLocalRandom.current();
 
         for (int i = 0; i < numFolds; ++i) {
             int foldSize = (data.size() / numFolds);
