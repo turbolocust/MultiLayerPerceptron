@@ -31,6 +31,9 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 
 /**
+ * Provides methods for data normalization. Before future extensions, a
+ * refactoring of this class should be done for a transition to a more
+ * object-oriented design.
  *
  * @author Matthias Fussenegger
  */
