@@ -35,27 +35,8 @@ import java.nio.file.Paths;
  */
 public final class AppUtils {
 
-    private static final String JAVA_VERSION = determineJavaVersion();
-
     private AppUtils() {
         throw new AssertionError("Holds static members only.");
-    }
-
-    private static String determineJavaVersion() {
-        final String version = System.getProperty("java.version");
-        int pos = version.indexOf('.');
-        pos = version.indexOf('.', pos + 1);
-        return version.substring(0, pos);
-    }
-
-    /**
-     * Determines the current Java version and returns the major version of Java
-     * as string. For e.g. Java 8, this would return {@code 1.8}.
-     *
-     * @return the Java major version as string.
-     */
-    public static String getJavaVersion() {
-        return JAVA_VERSION;
     }
 
     /**
